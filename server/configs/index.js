@@ -9,5 +9,9 @@ module.exports = {
         port: 27017,
         dbName: 'chat_test_db',
     },
-    production: {},
+    production: {
+        hostName: 'localhost',
+        port: 27017,
+        dbName: 'chat_prod_db',
+    },
 };

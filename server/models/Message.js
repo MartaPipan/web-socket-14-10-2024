@@ -14,18 +14,15 @@ const MessageSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
-    timestamp: {
-        type: Date,
-        default: Date.now,
-    },
     isRead: {
         type: Boolean,
         default: false,
     },
+}, {
+    timestamps: true, 
+    versionKey: false   
 });
-
 
 const Message = mongoose.model('Message', MessageSchema);
 
 module.exports = Message;
-

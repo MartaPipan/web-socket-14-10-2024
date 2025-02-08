@@ -25,6 +25,9 @@ const UserSchema = new mongoose.Schema({
             ref: 'Message',
         },
     ],
+}, {
+    timestamps: true,
+    versionKey: false
 });
 
 const User = mongoose.model('User', UserSchema);
