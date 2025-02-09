@@ -14,6 +14,7 @@ const HomePage = () => {
         return (
             <div>
                 <p>Hi, {user.login}!</p>
+                {/* <MessageList/> */}
                 {/* <MessageForm/> */}
             </div>
         );

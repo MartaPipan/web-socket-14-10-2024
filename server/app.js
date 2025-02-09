@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 const {
-    createUser,
+    createOrFindUser,
     getUserById,
     updateUser,
     deleteUser,
@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 });
 
 
-app.post('/users', createUser);
+app.post('/users', createOrFindUser);
 app.get('/users', getAllUsers);
 app.get('/users/:userId', getUserById);
 app.patch('/users/:userId', updateUser);

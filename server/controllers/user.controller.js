@@ -1,14 +1,18 @@
 const { User } = require('../models');
 const { Message } = require('../models');
 
-module.exports.createUser = async (req, res, next) => {
+module.exports.createOrFindUser = async (req, res, next) => {
     try {
         const { body } = req;
-        const user = await User.create(body);
-        if (!user) {
+        const oldUser = await User.findOne({ email: body.email });
+        if (oldUser) {
+            return res.status(200).send({ data: oldUser, message: 'User already exists'});
+        }
+        const newUser = await User.create(body);
+        if (!newUser) {
             return next(new Error('User not created'));
         }
-        res.status(201).send({ data:user });
+        res.status(201).send({ data:newUser });
 } catch (error) {
  next(error);
 }
