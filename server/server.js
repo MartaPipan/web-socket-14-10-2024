@@ -7,11 +7,12 @@ const port = process.env.PORT||3000;
 const server = http.createServer(app);
 
 const io = new Server(server, {
-        cors: {
-            origin: "http://localhost:3000",
-            methods: ["GET", "POST"],
-        },
-    });
+    cors: {
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST"]
+    }
+});
+
 //технологія Socket.IO, яка викор. для реального часу комунікації між клієнтом і сервером у веб-додатках
 //io — це глобальний об'єкт Socket.IO, який керує всіма з'єднаннями.
 //socket — це конкретне з'єднання клієнта із сервером, яке дозволяє надсилати та отримувати повідомлення.

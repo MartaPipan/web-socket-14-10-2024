@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux"
 import RegisterForm from "../components/RegisterForm"
+import MessageForm from "../components/MessageForm"
 
 
 const HomePage = () => {
@@ -15,7 +16,7 @@ const HomePage = () => {
             <div>
                 <p>Hi, {user.login}!</p>
                 {/* <MessageList/> */}
-                {/* <MessageForm/> */}
+                { <MessageForm/>}
             </div>
         );
     }
