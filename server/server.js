@@ -3,7 +3,16 @@ const { Server } = require('socket.io');
 const app = require('./app');
 const User = require('./models/User');
 const Message = require('./models/Message');
+const constants = require('./utils/constants');
 
+const {
+    WS_EVENTS: {
+        NEW_MSG,
+        BAD_MSG,
+        ORIGIN,
+        METHODS
+    }
+} = constants;
 
 
 const port = process.env.PORT || 3000;
@@ -12,15 +21,15 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"]
+        origin: ORIGIN,
+        methods: METHODS
     }
 });
 
 io.on("connection", (socket) => {
     console.log("User connected to socket");
 
-    socket.on("newMessage", async (messageData) => {
+    socket.on(NEW_MSG, async (messageData) => {
         try {
             // Перевірка на дублювання повідомлень
             const existingMessage = await Message.findOne({ uniqueId: messageData.uniqueId });
@@ -46,15 +55,15 @@ io.on("connection", (socket) => {
                 .populate({ path: 'userId', select: 'login' }); // Додаємо login користувача
 
             // Відправляємо повідомлення з login користувача
-            io.emit("newMessage", populatedMessage);
+            io.emit(NEW_MSG, populatedMessage);
             console.log("New message created with user login:", populatedMessage);
 
             // Відправляємо нове повідомлення всім підключеним клієнтам
-            io.emit("newMessage", newMessage);
+            io.emit(NEW_MSG, newMessage);
             console.log("New message created:", newMessage);
         } catch (error) {
             console.error("Error saving message:", error);
-            socket.emit("badMessage", "An error occurred while saving the message");
+            socket.emit(BAD_MSG, "An error occurred while saving the message");
         }
     });
 

@@ -2,6 +2,14 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import store from "../store";
 import { addMessage, errorMessage } from "../store/chatSlice";
+import constants from "../../utils/constants";
+
+const{
+    WS_EVENTS: {
+        NEW_MSG,
+        BAD_MSG
+    },
+} = constants;  
 
 const httpClient = axios.create({
     baseURL: "http://localhost:3000",
@@ -16,11 +24,11 @@ const socket = io("http://localhost:3000", {
 export const getMessagesHomePage = () => httpClient.get("/");
 export const createUser = (values) => httpClient.post("/users", values);
 
-export const createNewMessage = (message) => socket.emit("newMessage", message);//emit-відправляє повідомлення на сервер;назву події "newMessage" ми беремо на сервері у файлі server/server.js)
-socket.on("newMessage", (message) => {
+export const createNewMessage = (message) => socket.emit(NEW_MSG, message);//emit-відправляє повідомлення на сервер;назву події "newMessage" ми беремо на сервері у файлі server/server.js)
+socket.on(NEW_MSG, (message) => {
     console.log("Received new message:", message); 
     store.dispatch(addMessage(message));
 });//on-приймає повідомлення з сервера
-socket.on("badMessage", (error) => {
+socket.on(BAD_MSG, (error) => {
     store.dispatch(errorMessage(error));
 });
