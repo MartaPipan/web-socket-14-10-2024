@@ -10,8 +10,8 @@ const MessageForm = () => {
     const validationSchema = Yup.object({
         content: Yup.string().trim().required("Message cannot be empty"),
     });
-   
-//eslint-disable-next-line
+
+
     const onSubmit = (values, formikBag) => {
         // Construct the message object with the user ID
         const message = { ...values, userId: user._id };

@@ -2,6 +2,22 @@ const { User } = require('../models');
 const { Message } = require('../models');
 
 
+module.exports.getMessages = async (req, res, next) => {
+    try {
+        //only query params,not existing body
+        const messages = await Message.find().populate({
+            path: 'userId',
+            select: 'login'
+        });
+        if (!messages) {
+            return next(new Error('Messages not found'));
+        }
+        res.status(200).send({ data: messages });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports.createNewMessage = async (req, res, next) => {
     try {
         const { userId } = req.params;
@@ -20,7 +36,6 @@ module.exports.createNewMessage = async (req, res, next) => {
     }
 };
 
-
 module.exports.getMessagesByUser = async (req, res, next) => {
     try {
         const { params: { userId } } = req;
@@ -28,26 +43,6 @@ module.exports.getMessagesByUser = async (req, res, next) => {
 
         if (!messages.length) {
             return res.status(404).send({ errors: [{ detail: 'No messages found' }] });
-        }
-
-        res.status(200).send({ data: messages });
-    } catch (error) {
-        next(error);
-    }
-};
-
-module.exports.getChatMessages = async (req, res, next) => {
-    try {
-        const { params: { userId1, userId2 } } = req;
-        const messages = await Message.find({
-            $or: [
-                { userId: userId1, receiverId: userId2 },
-                { userId: userId2, receiverId: userId1 }
-            ]
-        }).sort({ createdAt: 1 });
-
-        if (!messages.length) {
-            return res.status(404).send({ errors: [{ detail: 'No chat messages found' }] });
         }
 
         res.status(200).send({ data: messages });
@@ -70,12 +65,6 @@ module.exports.deleteMessage = async (req, res, next) => {
         next(error);
     }
 };
-
-
-
-
-
-
 
 
 
@@ -106,22 +95,6 @@ module.exports.getUserMessages = async (req, res, next) => {
             return res.status(404).send({ errors: [{ detail: 'User not found' }] });
         }
         res.status(200).send({ data: user.messages });
-    } catch (error) {
-        next(error);
-    }
-};
-
-module.exports.getMessages = async (req, res, next) => {
-    try {
-        //only query params,not existing body
-        const messages = await Message.find().populate({
-            path: 'userId',
-            select: 'login'
-        });
-        if (!messages) {
-            return next(new Error('Messages not found'));
-        }
-        res.status(200).send({ data: messages });
     } catch (error) {
         next(error);
     }

@@ -1,9 +1,10 @@
 import { useSelector } from "react-redux"
 import RegisterForm from "../components/RegisterForm"
 import MessageForm from "../components/MessageForm"
+import MessageList from "../components/MessageList"
 
 
-const HomePage = () => {
+const HomePages = () => {
     const { user, error, isPending } = useSelector((store) => store.user);
     if (isPending) {
         return <p>Loading...</p>;
@@ -15,8 +16,8 @@ const HomePage = () => {
         return (
             <div>
                 <p>Hi, {user.login}!</p>
-                {/* <MessageList/> */}
-                { <MessageForm/>}
+                <MessageList/>
+                <MessageForm/>
             </div>
         );
     }
@@ -29,4 +30,4 @@ const HomePage = () => {
 };
 
 
-export default HomePage;
+export default HomePages;
