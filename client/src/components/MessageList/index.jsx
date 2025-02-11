@@ -7,9 +7,21 @@ const MessageList = () => {
     const { messages, isPending, error } = useSelector((store) => store.chat);
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(getAllMessages()); 
-    }, [dispatch]);
+    // Виконуємо `useEffect`, коли компонент монтується або змінюється `dispatch`
+useEffect(() => {
+    dispatch(getAllMessages()); // Викликаємо екшен для отримання всіх повідомлень з бекенду
+}, [dispatch]); // Залежність `dispatch` гарантує, що ефект не буде перевиконуватись без потреби
+
+    
+// Виконуємо `useEffect`, коли змінюється довжина масиву `messages`
+useEffect(() => {
+    window.scrollTo({
+        top: document.body.scrollHeight, // Прокручуємо сторінку вниз до кінця
+        behavior: 'smooth' // Додаємо плавну анімацію скролу
+    });
+}, [messages.length]); // Залежність `messages.length`, щоб скрол відбувався при отриманні нових повідомлень
+
+
 
     // Рендеримо повідомлення з унікальним ключем
     const showMessages = (message) => {

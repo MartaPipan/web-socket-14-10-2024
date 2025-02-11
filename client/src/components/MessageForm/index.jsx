@@ -18,7 +18,7 @@ const MessageForm = () => {
         const message = { ...values, userId: user._id };
         // Send the new message using the API
         createNewMessage(message);
-        formikBag.resetForm();
+        formikBag.resetForm(); //очищує форму
     };
 
     return (
