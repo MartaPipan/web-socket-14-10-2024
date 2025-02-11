@@ -1,7 +1,7 @@
 import axios from "axios";
 import { io } from "socket.io-client";
 import store from "../store";
-import { addMessage } from "../store/chatSlice";
+import { addMessage, errorMessage } from "../store/chatSlice";
 
 const httpClient = axios.create({
     baseURL: "http://localhost:3000",
@@ -21,3 +21,6 @@ socket.on("newMessage", (message) => {
     console.log("Received new message:", message); 
     store.dispatch(addMessage(message));
 });//on-приймає повідомлення з сервера
+socket.on("badMessage", (error) => {
+    store.dispatch(errorMessage(error));
+});

@@ -6,6 +6,7 @@ import { createNewMessage} from '../../api';
 
 const MessageForm = () => {
     const { user } = useSelector((store) => store.user);
+    const { errorMsg } = useSelector((store) => store.chat);
 
     const validationSchema = Yup.object({
         content: Yup.string().trim().required("Message cannot be empty"),
@@ -27,6 +28,7 @@ const MessageForm = () => {
             onSubmit={onSubmit}>
                 <Form>
                     <label>
+                        {errorMsg && <p>{errorMsg}</p>}
                         <span>new message</span>
                         <Field
                             type="text"

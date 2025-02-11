@@ -1,7 +1,11 @@
 const http = require('http');
-const Message = require('./models/Message');
 const { Server } = require('socket.io');
 const app = require('./app');
+const User = require('./models/User');
+const Message = require('./models/Message');
+
+
+
 const port = process.env.PORT || 3000;
 
 const server = http.createServer(app);
@@ -18,20 +22,39 @@ io.on("connection", (socket) => {
 
     socket.on("newMessage", async (messageData) => {
         try {
-            const newMessage = await Message.create(messageData); // Створення повідомлення
-
-            if (!newMessage) {
-                return socket.emit("error", "Message not created"); // Перевірка на помилку створення
+            // Перевірка на дублювання повідомлень
+            const existingMessage = await Message.findOne({ uniqueId: messageData.uniqueId });
+            if (existingMessage) {
+                console.log("Message already exists:", messageData.uniqueId);
+                return socket.emit("badMessage", "Message already exists");
             }
 
-            const populatedMessage = await Message.findById(newMessage._id)
-                .populate("userId", "login email"); // Завантаження даних користувача
+            // Отримуємо інформацію про користувача за допомогою userId
+            const user = await User.findById(messageData.userId);
+            if (!user) {
+                return socket.emit("badMessage", "User not found");
+            }
 
-            io.emit("newMessage", populatedMessage); // Відправка заповненого повідомлення
-            console.log("New message created:", populatedMessage);
+            // Створюємо нове повідомлення з додатковою інформацією
+            const newMessage = await Message.create(messageData);
+
+            if (!newMessage) {
+                return socket.emit("badMessage", "Message not created");
+            }
+             // Популяція поля userId для отримання login користувача
+            const populatedMessage = await Message.findById(newMessage._id)
+                .populate({ path: 'userId', select: 'login' }); // Додаємо login користувача
+
+            // Відправляємо повідомлення з login користувача
+            io.emit("newMessage", populatedMessage);
+            console.log("New message created with user login:", populatedMessage);
+
+            // Відправляємо нове повідомлення всім підключеним клієнтам
+            io.emit("newMessage", newMessage);
+            console.log("New message created:", newMessage);
         } catch (error) {
             console.error("Error saving message:", error);
-            socket.emit("error", "An error occurred while saving the message"); // Відправка помилки клієнту
+            socket.emit("badMessage", "An error occurred while saving the message");
         }
     });
 
@@ -47,5 +70,4 @@ server.listen(port, () => {
 
 //технологія Socket.IO, яка викор. для реального часу комунікації між клієнтом і сервером у веб-додатках
 //io — це глобальний об'єкт Socket.IO, який керує всіма з'єднаннями.
-//socket — це конкретне з'єднання клієнта із сервером, яке дозволяє надсилати та отримувати повідомлення.
-    
+//socket — це конкретне з'єднання клієнта із сервером, яке дозволяє надсилати та отримувати повідомлення.   

@@ -6,19 +6,18 @@ import Message from '../Message';
 const MessageList = () => {
     const { messages, isPending, error } = useSelector((store) => store.chat);
     const dispatch = useDispatch();
-    
+
     useEffect(() => {
         dispatch(getAllMessages()); 
     }, [dispatch]);
 
-    // Розгорнута функція для рендерингу повідомлень
+    // Рендеримо повідомлення з унікальним ключем
     const showMessages = (message) => {
-        // Використовуємо тільки унікальний _id, щоб уникнути дублювання ключів
-        const messageKey = `${message.uniqueId}`;
+        const messageKey = message.uniqueId;  // Використовуємо лише унікальний ID
         return (
             <Message
-                key={messageKey}   // Використовуємо комбінований ключ
-                message={message}    // передаємо повідомлення у компонент Message
+                key={messageKey}
+                message={message}
             />
         );
     };
@@ -35,10 +34,11 @@ const MessageList = () => {
         <section>
             {messages.length === 0 
                 ? <p>No messages available</p>
-                : messages.map(showMessages)  // Викликаємо showMessages для кожного повідомлення
+                : messages.map(showMessages)
             }
         </section>
     );
 };
+
 
 export default MessageList;

@@ -10,29 +10,45 @@ export const getAllMessages = createAsyncThunk(
         return thunkAPI.rejectWithValue(error);
     }
 });
-
 export const chatSlice = createSlice({
     name: 'chat',
     initialState: {
         messages: [],
         error: null,
-        isPending: false
+        isPending: false,
+        errorMsg: null
     },
     reducers: {
         addMessage: (state, action) => {
-            state.messages.push(action.payload);//(addMessage- один message) — цей запис додаватиме один об'єкт повідомлення в масив state.messages
+            state.errorMsg = null;
+            // Перевірка на дублювання за унікальним ID перед додаванням
+            const existingMessage = state.messages.find(
+                (message) => message.uniqueId === action.payload.uniqueId
+            );
+            if (!existingMessage) {
+                state.messages.push(action.payload);
+            }
+        },
+        errorMessage: (state, action) => {
+            state.errorMsg = action.payload;
         }
     },
     extraReducers: (builder) => {
-        //eslint-disable-next-line
-        builder.addCase(getAllMessages.pending, (state, action) => {
+        builder.addCase(getAllMessages.pending, (state) => {
             state.isPending = true;
-            //state.messages = [];якщо хочеш зберегти старі повідомлення і додавати нові, не очищаючи їх, то тоді не прописуй state.messages = [];
             state.error = null;
         });
         builder.addCase(getAllMessages.fulfilled, (state, action) => {
             state.isPending = false;
-            state.messages.push(...action.payload);// state.messages.push(...action.payload). Це розгортає масив, що приходить в action.payload, і додає кожен елемент по черзі до state.messages.
+            // Додаємо нові повідомлення, перевіряючи їх на дублювання
+            action.payload.forEach((message) => {
+                const existingMessage = state.messages.find(
+                    (msg) => msg.uniqueId === message.uniqueId
+                );
+                if (!existingMessage) {
+                    state.messages.push(message);
+                }
+            });
             state.error = null;
         });
         builder.addCase(getAllMessages.rejected, (state, action) => {
@@ -42,6 +58,7 @@ export const chatSlice = createSlice({
     },
 });
 
-export const { addMessage } = chatSlice.actions;
+export const { addMessage, errorMessage } = chatSlice.actions;
 
 export default chatSlice.reducer;
+
