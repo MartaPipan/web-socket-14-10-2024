@@ -1,12 +1,15 @@
 import PropTypes from 'prop-types';
+import DeleteMessage from '../DeleteMessage';
 
-const Message = ({
-    message: { content, userId: { login }}
-}) => {
+const Message = ({ message }) => {
+    const { content, userId: { login } } = message;
+
     return (
         <article>
             <h3>{content}</h3>
             <p>Message from: {login}</p>
+            {/* Delete button */}
+            <DeleteMessage message={message} />
         </article>
     );
 };
@@ -20,23 +23,8 @@ Message.propTypes = {
             login: PropTypes.string.isRequired,
         }).isRequired,
         isRead: PropTypes.bool,
-        uniqueId: PropTypes.string.isRequired, // Оскільки uniqueId завжди буде присутнім
+        uniqueId: PropTypes.string.isRequired, // Always present
     }).isRequired,
 };
 
 export default Message;
-
-
-//Example:
-//  "data": [
-//    {
-      //"isRead": false,
-     // "_id": "67aaf3899626dfc955c80ec2",
-     // "content": "Hello, how are you today?",
-     // "userId": {
-     //   "_id": "67aaee0f984a57e437e4e0b4",
-     //   "login": "bob"
-     // },
-    //  "uniqueId": "8c91d4ec-cb0e-43a7-954a-eb3ae68d3eba"
-//},
-    

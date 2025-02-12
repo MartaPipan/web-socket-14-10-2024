@@ -7,7 +7,9 @@ import constants from "../../utils/constants";
 const{
     WS_EVENTS: {
         NEW_MSG,
-        BAD_MSG
+        BAD_MSG,
+        EDIT_MSG,
+        DEL_MSG
     },
 } = constants;  
 
@@ -32,3 +34,9 @@ socket.on(NEW_MSG, (message) => {
 socket.on(BAD_MSG, (error) => {
     store.dispatch(errorMessage(error));
 });
+socket.on(EDIT_MSG, (message) => {
+    store.dispatch(addMessage(message));
+});
+socket.on(DEL_MSG, (message) => {
+    store.dispatch(addMessage(message));
+}); 
